@@ -1,4 +1,4 @@
-# Kubernetes TPR Tutorial
+# Kubernetes Custom Resources (CRD) Tutorial
 
 Tuturial for building a Kubernetes Custom Resources (CRD) extension
 you can see the full tutorial in: TBD
