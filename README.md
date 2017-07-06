@@ -7,7 +7,7 @@ you can see the full tutorial in: TBD
 
 the example contain 3 files:
 
-1. crd      - define and register our TPR class 
+1. crd      - define and register our CRD class 
 2. client   - client library to create and use our CRD (CRUD)
 3. kube-crd - main part, demonstrate how to create, use, and watch our CRD
 

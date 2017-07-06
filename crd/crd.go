@@ -35,7 +35,7 @@ const (
 	CRDDescription string = "My Example"
 )
 
-// Create the TPR resource, ignore error if it already exists
+// Create the CRD resource, ignore error if it already exists
 func CreateCRD(clientset apiextcs.Interface) error {
 	crd := &apiextv1beta1.CustomResourceDefinition{
 		ObjectMeta:  meta_v1.ObjectMeta{Name: CRDName + "." + CRDGroup},
@@ -58,7 +58,7 @@ func CreateCRD(clientset apiextcs.Interface) error {
 	return err
 }
 
-// Definition of our TPR Example class
+// Definition of our CRD Example class
 type Example struct {
 	meta_v1.TypeMeta   `json:",inline"`
 	meta_v1.ObjectMeta `json:"metadata"`
@@ -82,7 +82,7 @@ type ExampleList struct {
 	Items            []Example `json:"items"`
 }
 
-// Create a  Rest client with the new TPR Schema
+// Create a  Rest client with the new CRD Schema
 var SchemeGroupVersion = schema.GroupVersion{Group: CRDGroup, Version: CRDVersion}
 
 func addKnownTypes(scheme *runtime.Scheme) error {

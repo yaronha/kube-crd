@@ -50,7 +50,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	// note: if the TPR exist our CreateTPR function is set to exit without an error
+	// note: if the CRD exist our CreateCRD function is set to exit without an error
 	err = crd.CreateCRD(clientset)
 	if err != nil {
 		panic(err)
