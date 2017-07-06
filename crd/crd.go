@@ -1,33 +1,57 @@
+/*
+Copyright 2016 Iguazio Systems Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package crd
 
 import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	apiextcs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
-	"k8s.io/client-go/kubernetes"
-	v1b1e "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/rest"
+	"reflect"
 )
 
 const (
-	TPRName        string = "example"
-	TPRPlural      string = "examples"
-	TPRGroup       string = "myorg.io"
-	TPRVersion     string = "v1"
-	TPRDescription string = "My Example"
+	CRDName        string = "example"
+	CRDPlural      string = "examples"
+	CRDGroup       string = "myorg.io"
+	CRDVersion     string = "v1"
+	CRDDescription string = "My Example"
 )
 
 // Create the TPR resource, ignore error if it already exists
-func CreateTPR(clientset kubernetes.Interface) error {
-	tpr := &v1b1e.ThirdPartyResource{
-		ObjectMeta:  meta_v1.ObjectMeta{Name: TPRName + "." + TPRGroup},
-		Versions:    []v1b1e.APIVersion{{Name: TPRVersion}},
-		Description: TPRDescription,
+func CreateCRD(clientset apiextcs.Interface) error {
+	crd := &apiextv1beta1.CustomResourceDefinition{
+		ObjectMeta:  meta_v1.ObjectMeta{Name: CRDName + "." + CRDGroup},
+		Spec: apiextv1beta1.CustomResourceDefinitionSpec{
+			Group:     CRDGroup,
+			Version:   CRDVersion,
+			Scope:     apiextv1beta1.NamespaceScoped,
+			Names:     apiextv1beta1.CustomResourceDefinitionNames{
+				Plural:  CRDPlural,
+				Kind:    reflect.TypeOf(Example{}).Name(),
+			},
+
+		},
 	}
 
-	_, err := clientset.Extensions().ThirdPartyResources().Create(tpr)
+	_, err := clientset.ApiextensionsV1beta1().CustomResourceDefinitions().Create(crd)
 	if err != nil && apierrors.IsAlreadyExists(err) {
 		return nil
 	}
@@ -59,7 +83,7 @@ type ExampleList struct {
 }
 
 // Create a  Rest client with the new TPR Schema
-var SchemeGroupVersion = schema.GroupVersion{Group: TPRGroup, Version: TPRVersion}
+var SchemeGroupVersion = schema.GroupVersion{Group: CRDGroup, Version: CRDVersion}
 
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,

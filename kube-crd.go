@@ -1,10 +1,26 @@
+/*
+Copyright 2016 Iguazio Systems Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package main
 
 import (
 	"fmt"
 	"github.com/yaronha/kube-crd/client"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
+	apiextcs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
@@ -28,29 +44,29 @@ func main() {
 		panic(err.Error())
 	}
 
-	// create clientset and create our TPR, this only need to run once
-	clientset, err := kubernetes.NewForConfig(config)
+	// create clientset and create our CRD, this only need to run once
+	clientset, err := apiextcs.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	// note: if the TPR exist our CreateTPR function is set to exit without an error
-	err = crd.CreateTPR(clientset)
+	err = crd.CreateCRD(clientset)
 	if err != nil {
 		panic(err)
 	}
 
-	// Wait for the TPR to be created before we use it (only needed if its a new one)
+	// Wait for the CRD to be created before we use it (only needed if its a new one)
 	time.Sleep(3 * time.Second)
 
-	// Create a new clientset which include our TPR schema
-	tprcs, _, err := crd.NewClient(config)
+	// Create a new clientset which include our CRD schema
+	crdcs, _, err := crd.NewClient(config)
 	if err != nil {
 		panic(err)
 	}
 
-	// Create a TRP client interface
-	tprclient := client.TprClient(tprcs, "default")
+	// Create a CRD client interface
+	crdclient := client.CrdClient(crdcs, "default")
 
 	// Create a new Example object and write to k8s
 	example := &crd.Example{
@@ -68,13 +84,17 @@ func main() {
 		},
 	}
 
-	_, err = tprclient.Create(example)
-	if err != nil {
+	result, err := crdclient.Create(example)
+	if err == nil {
+		fmt.Printf("CREATED: %#v\n", result)
+	} else if apierrors.IsAlreadyExists(err) {
+		fmt.Printf("ALREADY EXISTS: %#v\n", result)
+	} else {
 		panic(err)
 	}
 
 	// List all Example objects
-	items, err := tprclient.List()
+	items, err := crdclient.List()
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +102,7 @@ func main() {
 
 	// Watch for changes in Example objects and fire Add, Delete, Update callbacks (i.e. Controller)
 	_, controller := cache.NewInformer(
-		tprclient.NewListWatch(),
+		crdclient.NewListWatch(),
 		&crd.Example{},
 		time.Minute*10,
 		cache.ResourceEventHandlerFuncs{
