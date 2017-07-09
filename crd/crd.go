@@ -16,15 +16,16 @@ limitations under the License.
 package crd
 
 import (
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"reflect"
+
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apiextcs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/client-go/rest"
-	"reflect"
 )
 
 const (
@@ -38,16 +39,15 @@ const (
 // Create the CRD resource, ignore error if it already exists
 func CreateCRD(clientset apiextcs.Interface) error {
 	crd := &apiextv1beta1.CustomResourceDefinition{
-		ObjectMeta:  meta_v1.ObjectMeta{Name: CRDName + "." + CRDGroup},
+		ObjectMeta: meta_v1.ObjectMeta{Name: CRDName + "." + CRDGroup},
 		Spec: apiextv1beta1.CustomResourceDefinitionSpec{
-			Group:     CRDGroup,
-			Version:   CRDVersion,
-			Scope:     apiextv1beta1.NamespaceScoped,
-			Names:     apiextv1beta1.CustomResourceDefinitionNames{
-				Plural:  CRDPlural,
-				Kind:    reflect.TypeOf(Example{}).Name(),
+			Group:   CRDGroup,
+			Version: CRDVersion,
+			Scope:   apiextv1beta1.NamespaceScoped,
+			Names: apiextv1beta1.CustomResourceDefinitionNames{
+				Plural: CRDPlural,
+				Kind:   reflect.TypeOf(Example{}).Name(),
 			},
-
 		},
 	}
 

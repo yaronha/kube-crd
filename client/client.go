@@ -17,6 +17,7 @@ package client
 
 import (
 	"github.com/yaronha/kube-crd/crd"
+
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/rest"
@@ -26,12 +27,12 @@ import (
 // This file implement all the (CRUD) client methods we need to access our TPR object
 
 func CrdClient(cl *rest.RESTClient, namespace string) *crdclient {
-	return &crdclient{cl: cl, ns: namespace, plural:crd.CRDPlural}
+	return &crdclient{cl: cl, ns: namespace, plural: crd.CRDPlural}
 }
 
 type crdclient struct {
-	cl *rest.RESTClient
-	ns string
+	cl     *rest.RESTClient
+	ns     string
 	plural string
 }
 

@@ -17,15 +17,17 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/yaronha/kube-crd/client"
-	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/yaronha/kube-crd/crd"
+
 	apiextcs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
-	"time"
-	"github.com/yaronha/kube-crd/crd"
 )
 
 // return rest config, if path not specified assume in cluster config
