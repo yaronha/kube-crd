@@ -28,6 +28,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
+	"flag"
 )
 
 // return rest config, if path not specified assume in cluster config
@@ -40,8 +41,10 @@ func GetClientConfig(kubeconfig string) (*rest.Config, error) {
 
 func main() {
 
-	kubeconf := "admin.conf" // Full path to Kube config
-	config, err := GetClientConfig(kubeconf)
+	kubeconf := flag.String("kubeconf", "", "Path to a kube config. Only required if out-of-cluster.")
+	flag.Parse()
+
+	config, err := GetClientConfig(*kubeconf)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -102,7 +105,8 @@ func main() {
 	}
 	fmt.Printf("List:\n%s\n", items)
 
-	// Watch for changes in Example objects and fire Add, Delete, Update callbacks (i.e. Controller)
+	// Example Controller
+	// Watch for changes in Example objects and fire Add, Delete, Update callbacks
 	_, controller := cache.NewInformer(
 		crdclient.NewListWatch(),
 		&crd.Example{},

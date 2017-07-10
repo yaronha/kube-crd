@@ -29,22 +29,21 @@ import (
 )
 
 const (
-	CRDName        string = "example"
 	CRDPlural      string = "examples"
 	CRDGroup       string = "myorg.io"
 	CRDVersion     string = "v1"
-	CRDDescription string = "My Example"
+	FullCRDName    string = CRDPlural + "." + CRDGroup
 )
 
 // Create the CRD resource, ignore error if it already exists
 func CreateCRD(clientset apiextcs.Interface) error {
 	crd := &apiextv1beta1.CustomResourceDefinition{
-		ObjectMeta: meta_v1.ObjectMeta{Name: CRDName + "." + CRDGroup},
+		ObjectMeta: meta_v1.ObjectMeta{Name: FullCRDName},
 		Spec: apiextv1beta1.CustomResourceDefinitionSpec{
 			Group:   CRDGroup,
 			Version: CRDVersion,
 			Scope:   apiextv1beta1.NamespaceScoped,
-			Names: apiextv1beta1.CustomResourceDefinitionNames{
+			Names:   apiextv1beta1.CustomResourceDefinitionNames{
 				Plural: CRDPlural,
 				Kind:   reflect.TypeOf(Example{}).Name(),
 			},
@@ -56,6 +55,8 @@ func CreateCRD(clientset apiextcs.Interface) error {
 		return nil
 	}
 	return err
+
+	// Note the original apiextensions example adds logic to wait for creation and exception handling
 }
 
 // Definition of our CRD Example class

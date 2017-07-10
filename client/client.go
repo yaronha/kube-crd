@@ -24,7 +24,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-// This file implement all the (CRUD) client methods we need to access our TPR object
+// This file implement all the (CRUD) client methods we need to access our CRD object
 
 func CrdClient(cl *rest.RESTClient, namespace string) *crdclient {
 	return &crdclient{cl: cl, ns: namespace, plural: crd.CRDPlural}
