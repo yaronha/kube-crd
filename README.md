@@ -1,7 +1,7 @@
 # Kubernetes Custom Resources (CRD) Tutorial
 
 Tutorial for building Kubernetes Custom Resources (CRD) extensions
-you can see the full tutorial documentation in: TBD
+you can see the full tutorial documentation in: [The New Stack](https://thenewstack.io/extend-kubernetes-1-7-custom-resources)
 
 **Note:** CustomResourceDefinition (CRD) is the successor of the deprecated ThirdPartyResource.
 
