@@ -41,7 +41,7 @@ func GetClientConfig(kubeconfig string) (*rest.Config, error) {
 
 func main() {
 
-	kubeconf := flag.String("kubeconf", "", "Path to a kube config. Only required if out-of-cluster.")
+	kubeconf := flag.String("kubeconf", "admin.conf", "Path to a kube config. Only required if out-of-cluster.")
 	flag.Parse()
 
 	config, err := GetClientConfig(*kubeconf)
@@ -65,13 +65,13 @@ func main() {
 	time.Sleep(3 * time.Second)
 
 	// Create a new clientset which include our CRD schema
-	crdcs, _, err := crd.NewClient(config)
+	crdcs, scheme, err := crd.NewClient(config)
 	if err != nil {
 		panic(err)
 	}
 
 	// Create a CRD client interface
-	crdclient := client.CrdClient(crdcs, "default")
+	crdclient := client.CrdClient(crdcs, scheme, "default")
 
 	// Create a new Example object and write to k8s
 	example := &crd.Example{
@@ -99,7 +99,7 @@ func main() {
 	}
 
 	// List all Example objects
-	items, err := crdclient.List()
+	items, err := crdclient.List(meta_v1.ListOptions{})
 	if err != nil {
 		panic(err)
 	}

@@ -22,18 +22,21 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // This file implement all the (CRUD) client methods we need to access our CRD object
 
-func CrdClient(cl *rest.RESTClient, namespace string) *crdclient {
-	return &crdclient{cl: cl, ns: namespace, plural: crd.CRDPlural}
+func CrdClient(cl *rest.RESTClient, scheme *runtime.Scheme, namespace string) *crdclient {
+	return &crdclient{cl: cl, ns: namespace, plural: crd.CRDPlural,
+		codec: runtime.NewParameterCodec(scheme)}
 }
 
 type crdclient struct {
 	cl     *rest.RESTClient
 	ns     string
 	plural string
+	codec  runtime.ParameterCodec
 }
 
 func (f *crdclient) Create(obj *crd.Example) (*crd.Example, error) {
@@ -67,10 +70,11 @@ func (f *crdclient) Get(name string) (*crd.Example, error) {
 	return &result, err
 }
 
-func (f *crdclient) List() (*crd.ExampleList, error) {
+func (f *crdclient) List(opts meta_v1.ListOptions) (*crd.ExampleList, error) {
 	var result crd.ExampleList
 	err := f.cl.Get().
 		Namespace(f.ns).Resource(f.plural).
+		VersionedParams(&opts, f.codec).
 		Do().Into(&result)
 	return &result, err
 }
