@@ -33,7 +33,7 @@ import (
 
 // return rest config, if path not specified assume in cluster config
 func GetClientConfig(kubeconfig string) (*rest.Config, error) {
-	if kubeconfig != "" {
+	if kubeconfig == "" {
 		return clientcmd.BuildConfigFromFlags("", kubeconfig)
 	}
 	return rest.InClusterConfig()
@@ -41,7 +41,7 @@ func GetClientConfig(kubeconfig string) (*rest.Config, error) {
 
 func main() {
 
-	kubeconf := flag.String("kubeconf", "admin.conf", "Path to a kube config. Only required if out-of-cluster.")
+	kubeconf := flag.String("kubeconf", "", "Path to a kube config. Only required if out-of-cluster.")
 	flag.Parse()
 
 	config, err := GetClientConfig(*kubeconf)
