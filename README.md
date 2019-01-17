@@ -19,6 +19,7 @@ the example contain 3 files:
 
 ```
 # assumes you have a working kubeconfig, not required if operating in-cluster
+glide update --strip-vendor
 go run *.go -kubeconf=$HOME/.kube/config
 ```
 
