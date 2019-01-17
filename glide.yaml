@@ -1,0 +1,20 @@
+package: github.com/yaronha/kube-crd
+import:
+- package: k8s.io/apiextensions-apiserver
+  subpackages:
+  - pkg/apis/apiextensions/v1beta1
+  - pkg/client/clientset/clientset
+- package: k8s.io/apimachinery
+  subpackages:
+  - pkg/api/errors
+  - pkg/apis/meta/v1
+  - pkg/fields
+  - pkg/runtime
+  - pkg/runtime/schema
+  - pkg/runtime/serializer
+- package: k8s.io/client-go
+  version: v10.0.0
+  subpackages:
+  - rest
+  - tools/cache
+  - tools/clientcmd
